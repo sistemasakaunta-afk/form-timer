@@ -47,12 +47,12 @@ if (!token) {
   // Revisar estado del token
   let estadoToken = localStorage.getItem(`token_${token}`);
   let fin = localStorage.getItem(`fin_${token}`);
-
-  if (!fin) {
-    // primer acceso
+fin = Number(fin); //  Convertir a número para cálculos
+if (!fin) {
     fin = Date.now() + DURACION * 1000;
     localStorage.setItem(`fin_${token}`, fin);
     localStorage.setItem(`token_${token}`, "activo");
+
   } else if (estadoToken === "usado") {
     formContainer.innerHTML = `<p class="text-red-600 text-lg text-center py-10">Este formulario ya ha sido completado con este enlace.</p>`;
     timer.style.display = "none";
@@ -90,3 +90,4 @@ if (!token) {
 
 </body>
 </html>
+
