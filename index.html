@@ -1,84 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario</title>
-   
-     <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario con Temporizador</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-start min-h-screen p-4">
-    
-<!-- encabezado-->
-<header class="bg-blue-600 text-white text-center w-full py-4 shadow-md rounded-lg mb-6">
-<h1 class="text-2xl font-semibold">Examen con limite de tiempo</h1>
-<p class="text-sm opacity-90">Completa el formulario antes que el tiempo se termine</p>
-</header>
 
+  <!-- Encabezado -->
+  <header class="bg-blue-600 text-white text-center w-full py-4 shadow-md rounded-lg mb-6">
+    <h1 class="text-2xl font-semibold">Examen con límite de tiempo</h1>
+    <p class="text-sm opacity-90">Completa el formulario antes que el tiempo se termine</p>
+  </header>
 
-<!-- temporizador-->
+  <!-- Temporizador -->
+  <div id="timer" class="text-4xl font-bold text-red-600 bg-white px-6 py-3 rounded-lg shadow-md mb-4">
+    30:00
+  </div>
 
-<div id="timer" class="text-4xl font-bold text-red-600 bg-white px-6 py-3 rounded-lg shadow-md mb-4">
-2:00
-</div>
+  <!-- Contenedor del formulario -->
+  <div id="formContainer" class="w-full max-w-5xl bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-200">
+    <iframe
+      id="formFrame"
+      src="https://forms.gle/d3qGopL47nVpmsKx9"
+      class="w-full h-[80vh] border-none">
+    </iframe>
+  </div>
 
-<!-- contenedor del formulario-->
+  <footer class="mt-6 text-gray-500 text-sm">
+    ©2025 - Sistema Evaluación Automatizado - Akaunta
+  </footer>
 
-<div class="w-full max-w-5xl bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-200">
-<iframe id="formFrame" 
-src="https://forms.gle/d3qGopL47nVpmsKx9"
-class="w-full h-[80vh] border-none"
->
-</iframe>
-</div>
+  <script>
+    const DURACION = 2 * 60; // duración en segundos (2 minutos para prueba)
+    const timer = document.getElementById("timer");
+    const formContainer = document.getElementById("formContainer");
 
-
-<footer class="mt-6 text-gray-500 text-sm">@2025- sistema evaluacion automatizado-akaunta 
-
-
-
-</footer>
-
-<script>
-let tiempo = 2 * 60; // tiempo en segundos 
-const timer = document.getElementById("timer"); 
-const iFrame =  document.getElementById("formFrame");
- // Revisar si ya hay hora de fin guardada
+    // Revisar si ya hay hora de fin guardada
     let fin = localStorage.getItem("finTiempo");
     if (!fin) {
-      fin = Date.now() + tiempo * 1000;
+      fin = Date.now() + DURACION * 1000;
       localStorage.setItem("finTiempo", fin);
     }
-const  intervalo = setInterval(() => {
 
-    const min = Math.floor(tiempo / 60);
-    const seg = tiempo % 60;
-    timer.textContent = `${min}:${seg < 10 ? "0" + seg : seg}`;
-    tiempo--;
+    const intervalo = setInterval(() => {
+      const tiempoRestante = Math.floor((fin - Date.now()) / 1000);
 
+      if (tiempoRestante <= 0) {
+        clearInterval(intervalo);
+        localStorage.removeItem("finTiempo");
 
+        // Reemplazar contenido cuando se acabe el tiempo
+        document.body.innerHTML = `
+          <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+            <h1 class="text-4xl font-bold text-red-600 mb-4">⏰ Tiempo finalizado</h1>
+            <p class="text-gray-700 text-lg">Gracias por participar. Tus respuestas han sido enviadas o el formulario ya no está disponible.</p>
+          </div>`;
+        return;
+      }
 
-// cambiar color segun tiempo
+      // Actualizar temporizador
+      const min = Math.floor(tiempoRestante / 60);
+      const seg = tiempoRestante % 60;
+      timer.textContent = `${min}:${seg < 10 ? "0" + seg : seg}`;
 
-if(tiempo < 60) timer.classList.add("text-yellow-500");
-if(tiempo < 20) timer.classList.add("text-red-700", "animate-pulse");
+      // Cambiar colores según tiempo
+      timer.classList.remove("text-yellow-500", "text-red-700", "animate-pulse");
+      if (tiempoRestante < 60) timer.classList.add("text-yellow-500");
+      if (tiempoRestante < 20) timer.classList.add("text-red-700", "animate-pulse");
 
-//cuando se acabe el tiempo
-
-if(tiempo < 0) {
-    clearInterval(intervalo);
-    document.body.innerHTML = `<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-    <h1 class="text-4xl font-bold text-red-600 mb-4"> Tiempo finalizado</h1>
-    <p class="text-gray-700 text-lg">Gracias por participar tus respuestas han sido enviadas o el
-        formulario ya no esta disponible.</p></div>`;
-}
-},1000);
-</script>
-
+    }, 1000);
+  </script>
 </body>
-
-
 </html>
+
 
 
 
