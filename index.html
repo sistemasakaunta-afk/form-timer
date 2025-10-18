@@ -43,7 +43,12 @@ class="w-full h-[80vh] border-none"
 let tiempo = 2 * 60; // tiempo en segundos 
 const timer = document.getElementById("timer"); 
 const iFrame =  document.getElementById("formFrame");
-
+ // Revisar si ya hay hora de fin guardada
+    let fin = localStorage.getItem("finTiempo");
+    if (!fin) {
+      fin = Date.now() + tiempo * 1000;
+      localStorage.setItem("finTiempo", fin);
+    }
 const  intervalo = setInterval(() => {
 
     const min = Math.floor(tiempo / 60);
@@ -74,6 +79,7 @@ if(tiempo < 0) {
 
 
 </html>
+
 
 
 
