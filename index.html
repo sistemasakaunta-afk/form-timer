@@ -15,7 +15,7 @@
   </header>
 
   <!-- Temporizador -->
-  <div id="timer" class="text-4xl font-bold text-red-600 bg-white px-6 py-3 rounded-lg shadow-md mb-4">
+  <div id="timer" class="hidden text-4xl font-bold text-red-600 bg-white px-6 py-3 rounded-lg shadow-md mb-4">
     30:00
   </div>
 
@@ -38,6 +38,7 @@
 
   <script>
     
+  //Configuración de Firebase
     const firebaseConfig = {
   apiKey: "AIzaSyC4JmoOFdwBFM0zJitsJdmAGGTkpUoXm04",
   authDomain: "formularios-32660.firebaseapp.com",
@@ -52,16 +53,18 @@
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-    const token = "nXV2VaV9iUDxaiAklBdw";
+   // token a validar 
+const token = "nXV2VaV9iUDxaiAklBdw";
+    
+// referencia al dom
     
 
-    
-    const DURACION = 30 * 60; // duración en segundos (2 minutos para prueba)
     const timer = document.getElementById("timer");
     const formContainer = document.getElementById("formContainer");
 
     const formFrame = document.getElementById("formFrame"); // contenedor formulario
 
+    // buscar el token en firestore
     db.collection("tokens").doc(token).get()
     .then(doc => {
       if(!doc.exists){
@@ -85,23 +88,29 @@ const db = firebase.firestore();
     return;
   }
 
-      // token valido para mostrar formulario
-      formFrame.src = "https://forms.gle/d3qGopL47nVpmsKx9";
+      //  Token válido → mostrar formulario y temporizador
+        formFrame.src = "https://forms.gle/d3qGopL47nVpmsKx9";
+        timer.classList.remove("hidden");
+        formContainer.classList.remove("hidden");
+
+
+      // cambiar el estado del token
       db.collection("tokens").doc(token).update({estado: "usado"});
+      // iniciar temporizador
+      iniciarTemporizador(30 * 60); // 30 minutos
+      
     })
     .catch(err => {
       console.error("error verificando token: ", err);
+      formContainer.classList.remove("hidden");
       formContainer.innerHTML = `<p class="p-6 text-red-600">Error al validar el token</p>`;
     })
     
 
-    // Revisar si ya hay hora de fin guardada
-    let fin = localStorage.getItem("finTiempo");
-    if (!fin) {
-      fin = Date.now() + DURACION * 1000;
-      localStorage.setItem("finTiempo", fin);
-    }
-
+   // 🔹 Función para el temporizador
+    function iniciarTemporizador(duracionSegundos) {
+      let fin = Date.now() + duracionSegundos * 1000;
+      
     const intervalo = setInterval(() => {
       const tiempoRestante = Math.floor((fin - Date.now()) / 1000);
 
@@ -129,9 +138,11 @@ const db = firebase.firestore();
       if (tiempoRestante < 20) timer.classList.add("text-red-700", "animate-pulse");
 
     }, 1000);
+    }
   </script>
 </body>
 </html>
+
 
 
 
