@@ -67,6 +67,18 @@ const db = firebase.firestore();
     console.error("❌ Error de conexión a Firestore:", error);
   });
 
+
+    / Actualiza el documento
+db.collection("token1").doc("nXV2VaV9iUDxaiAklBdw")
+  .update({
+    estado: "inactivo"
+  })
+  .then(() => {
+    console.log("✅ Estado actualizado correctamente a 'inactivo'");
+  })
+  .catch((error) => {
+    console.error("❌ Error al actualizar el estado:", error);
+  });
    // token a validar 
 const token = "nXV2VaV9iUDxaiAklBdw";
     
@@ -156,6 +168,7 @@ const token = "nXV2VaV9iUDxaiAklBdw";
   </script>
 </body>
 </html>
+
 
 
 
