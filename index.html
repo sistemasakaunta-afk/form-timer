@@ -95,7 +95,7 @@ const token = "nXV2VaV9iUDxaiAklBdw";
 
 
       // cambiar el estado del token
-      db.collection("tokens").doc(token).update({estado: "usado"});
+      db.collection("token1").doc(token).update({estado: "usado"});
       // iniciar temporizador
       iniciarTemporizador(30 * 60); // 30 minutos
       
@@ -142,6 +142,7 @@ const token = "nXV2VaV9iUDxaiAklBdw";
   </script>
 </body>
 </html>
+
 
 
 
