@@ -65,7 +65,7 @@ const token = "nXV2VaV9iUDxaiAklBdw";
     const formFrame = document.getElementById("formFrame"); // contenedor formulario
 
     // buscar el token en firestore
-    db.collection("tokens").doc(token).get()
+    db.collection("token1").doc(token).get()
     .then(doc => {
       if(!doc.exists){
         alert("Token invalido. ");
@@ -142,6 +142,7 @@ const token = "nXV2VaV9iUDxaiAklBdw";
   </script>
 </body>
 </html>
+
 
 
 
