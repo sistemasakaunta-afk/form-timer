@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulario1</title>
+  <title>Formulario con Temporizador</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-start min-h-screen p-4">
@@ -15,119 +15,30 @@
   </header>
 
   <!-- Temporizador -->
-  <div id="timer" class="hidden text-4xl font-bold text-red-600 bg-white px-6 py-3 rounded-lg shadow-md mb-4">
+  <div id="timer" class="text-4xl font-bold text-red-600 bg-white px-6 py-3 rounded-lg shadow-md mb-4">
     30:00
   </div>
 
   <!-- Contenedor del formulario -->
   <div id="formContainer" class="w-full max-w-5xl bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-200">
-    <iframe
-      id="formFrame"
-      src="https://forms.gle/d3qGopL47nVpmsKx9"
-      class="w-full h-[80vh] border-none">
-    </iframe>
+    <iframe id="formFrame" src="https://forms.gle/d3qGopL47nVpmsKx9" class="w-full h-[80vh] border-none"></iframe>
   </div>
 
   <footer class="mt-6 text-gray-500 text-sm">
     ©2025 - Sistema Evaluación Automatizado - Akaunta
   </footer>
 
-  <!-- Firebase App (core SDK) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
   <script>
-    
-  //Configuración de Firebase
-    const firebaseConfig = {
-  apiKey: "AIzaSyC4JmoOFdwBFM0zJitsJdmAGGTkpUoXm04",
-  authDomain: "formularios-32660.firebaseapp.com",
-  projectId: "formularios-32660",
-  storageBucket: "formularios-32660.firebasestorage.app",
-  messagingSenderId: "587763195725",
-  appId: "1:587763195725:web:707850aa333ddb58796104",
-  measurementId: "G-133P93Q7YZ"
-};
-
-  // Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-    db.collection("token1")
-  .limit(1)
-  .get()
-  .then((snapshot) => {
-    if (!snapshot.empty) {
-      console.log("✅ Conectado a Firestore correctamente");
-    } else {
-      console.log("✅ Conexión correcta, pero colección vacía");
-    }
-  })
-  .catch((error) => {
-    console.error("❌ Error de conexión a Firestore:", error);
-  });
-
-
-    // Actualiza el documento
-
-   // token a validar 
-const token = "nXV2VaV9iUDxaiAklBdw";
-    
-// referencia al dom
-    
-
+    const DURACION = 2 * 60; // duración en segundos (2 minutos para prueba)
     const timer = document.getElementById("timer");
-    const formContainer = document.getElementById("formContainer");
 
-    const formFrame = document.getElementById("formFrame"); // contenedor formulario
+    // Revisar si ya hay hora de fin guardada
+    let fin = localStorage.getItem("finTiempo");
+    if (!fin) {
+      fin = Date.now() + DURACION * 1000;
+      localStorage.setItem("finTiempo", fin);
+    }
 
-    // buscar el token en firestore
-    db.collection("token1").doc(token).get()
-    .then(doc => {
-      if(!doc.exists){
-        alert("Token invalido. ");
-        formContainer.innerHTML = `<p class="p-6 text-red-600">Token invalido o no encontrado</p>`;
-        return;
-        
-      }
-
-      const data = doc.data();
-      const ahora = Date.now();
-
-      if(data.estado !== "activo") {
-
-          formContainer.innerHTML = `<p class="p-6 text-red-600">Este formulario ya fue usado</p>`;
-        return;
-      }
-      
-        if(ahora > data.fin){
-    formContainer.innerHTML = `<p class="p-6 text-red-600">El token expiró</p>`;
-    return;
-  }
-
-      //  Token válido → mostrar formulario y temporizador
-        formFrame.src = "https://forms.gle/d3qGopL47nVpmsKx9";
-        timer.classList.remove("hidden");
-        formContainer.classList.remove("hidden");
-
-
-      // cambiar el estado del token
-      db.collection("token1").doc(token).update({estado: "usado"});
-      // iniciar temporizador
-      iniciarTemporizador(30 * 60); // 30 minutos
-      
-    })
-    .catch(err => {
-      console.error("error verificando token: ", err);
-      formContainer.classList.remove("hidden");
-      formContainer.innerHTML = `<p class="p-6 text-red-600">Error al validar el token</p>`;
-    })
-    
-
-   // 🔹 Función para el temporizador
-    function iniciarTemporizador(duracionSegundos) {
-      let fin = Date.now() + duracionSegundos * 1000;
-      
     const intervalo = setInterval(() => {
       const tiempoRestante = Math.floor((fin - Date.now()) / 1000);
 
@@ -139,8 +50,11 @@ const token = "nXV2VaV9iUDxaiAklBdw";
         document.body.innerHTML = `
           <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <h1 class="text-4xl font-bold text-red-600 mb-4">⏰ Tiempo finalizado</h1>
-            <p class="text-gray-700 text-lg">Gracias por participar. Tus respuestas han sido enviadas o el formulario ya no está disponible.</p>
-          </div>`;
+            <p class="text-gray-700 text-lg">
+              Gracias por participar. Tus respuestas han sido enviadas o el formulario ya no está disponible.
+            </p>
+          </div>
+        `;
         return;
       }
 
@@ -155,20 +69,7 @@ const token = "nXV2VaV9iUDxaiAklBdw";
       if (tiempoRestante < 20) timer.classList.add("text-red-700", "animate-pulse");
 
     }, 1000);
-    }
   </script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
